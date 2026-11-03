@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>MultiLanguage</AssemblyName>
+    <RootNamespace>MultiLanguage</RootNamespace>
+
+    <!-- папка с игрой, можно переопределить: dotnet build -c Release -p:GameDir=... -->
+    <GameDir Condition="'$(GameDir)' == ''">C:\Games\Slendytubbies 3 Multiplayer (x64)</GameDir>
+    <ML>$(GameDir)\MelonLoader</ML>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>$(ML)\net6\MelonLoader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(ML)\net6\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>$(ML)\net6\Il2CppInterop.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Common" Condition="Exists('$(ML)\net6\Il2CppInterop.Common.dll')">
+      <HintPath>$(ML)\net6\Il2CppInterop.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- Сборки игры, сгенерированные MelonLoader -->
+    <Reference Include="$(ML)\Il2CppAssemblies\*.dll" Private="false" />
+  </ItemGroup>
+
+  <!-- флаги и переводы вшиваем прямо в DLL -->
+  <ItemGroup>
+    <EmbeddedResource Include="Flags\*.png" LogicalName="Flags/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Lang\*.txt" LogicalName="Lang/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <Target Name="CopyToMods" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GameDir)\Mods" />
+  </Target>
+
+</Project>
