@@ -27,7 +27,7 @@ namespace MultiLanguage
         internal const int BuiltInCount = 10;
         internal static readonly List<LangDef> Langs = new List<LangDef>();
 
-        // встроенные языки игры, порядок менять нельзя
+        // не трогайте, этот порядок менять нельзя
         private static readonly string[][] BuiltIn =
         {
             new string[] { "en",   "English" },
@@ -42,7 +42,6 @@ namespace MultiLanguage
             new string[] { "ro",   "Română" },
         };
 
-        // наши языки. Добавлять только в конец, иначе у людей слетит выбранный язык.
         // В игре язык появится, только если есть Lang/<код>.txt
         private static readonly string[][] Custom =
         {
@@ -108,7 +107,6 @@ namespace MultiLanguage
             LanguagePanel.Tick();
         }
 
-        // файл плоский (строка N = текст N) или поделён на [разделы]
         private static void ParseSections(string[] lines, LangDef def)
         {
             Dictionary<string, List<string>> sec = null;
@@ -133,8 +131,6 @@ namespace MultiLanguage
             foreach (var kv in sec) def.Sections[kv.Key] = kv.Value.ToArray();
         }
 
-        // у метода переводчика обфусцированное имя из версии 2.62, ищем его по имени.
-        // После обновления игры может не найтись, тогда просто пишем в лог
         private void PatchTranslator()
         {
             try
@@ -169,8 +165,6 @@ namespace MultiLanguage
                 MelonLogger.Warning($"[{code}] no translation for #{idx}: \"{key}\"");
         }
 
-        // __0 = номер строки (с 1), __1 = группа текстов (у нас всегда "MP").
-        // Строка вида "что-то:перевод", берём всё после первого двоеточия
         public static bool TranslatorPrefix(int __0, string __1, ref string __result)
         {
             int lang = PlayerPrefs.GetInt("Language");
@@ -206,7 +200,6 @@ namespace MultiLanguage
             return false;
         }
 
-        // добавляем свои языки в список игры, от него зависят SetLanguage и иконка в углу
         internal static void ApplyToMenu(MainMenu menu)
         {
             var list = menu.OLHCOGFBIGC;
@@ -219,7 +212,7 @@ namespace MultiLanguage
                 if (item != null && item.icon != null) Langs[i].Icon = item.icon;
             }
 
-            if (list.Count > BuiltInCount) return;          // уже добавили
+            if (list.Count > BuiltInCount) return;
 
             for (int i = BuiltInCount; i < Langs.Count; i++)
             {
