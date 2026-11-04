@@ -8,7 +8,7 @@ using MainMenu = Il2Cpp.MainMenu;
 
 namespace MultiLanguage
 {
-    // Своя панель выбора языка вместо старого списка (кнопка в левом нижнем углу меню)
+    // панель
     internal static class LanguagePanel
     {
         private const float MaxFlag = 72f;    // макс. размер флага
@@ -28,23 +28,23 @@ namespace MultiLanguage
             foreach (var b in Resources.FindObjectsOfTypeAll<Button>())
             {
                 if (b == null || b.name != "LanguageButton") continue;
-                if (!b.gameObject.scene.IsValid()) continue;   // префабы пропускаем
+                if (!b.gameObject.scene.IsValid()) continue;
                 found = b;
                 break;
             }
-            if (found == null) return;                          // не главное меню
+            if (found == null) return;
 
             if (_langButton != null && _hookedId == found.GetInstanceID()) return;
 
             _langButton = found;
             _hookedId = found.GetInstanceID();
             _langImage = found.GetComponent<Image>();
-            _panel = null;                                      // от прошлой сцены
+            _panel = null;
             _gameFont = null;
-            _replFont = null;                                   // мог выгрузиться вместе со сценой
+            _replFont = null;
             _replTried = false;
 
-            // новый onClick, в старом остался вызов родного списка
+            // onClick
             found.onClick = new Button.ButtonClickedEvent();
             found.onClick.AddListener(new Action(Toggle));
 
@@ -72,7 +72,7 @@ namespace MultiLanguage
         private static bool _replTried;
         private static int _replLang = -1;
 
-        // пока выбран свой язык, ставим другой шрифт там, где в игровом нет нужных букв
+        // шрифт
         private static void FixFonts()
         {
             int lang = PlayerPrefs.GetInt("Language");
@@ -146,7 +146,7 @@ namespace MultiLanguage
                 else PlayerPrefs.SetInt("Language", id);
                 PlayerPrefs.Save();
 
-                // иконка в углу должна совпадать с выбором
+                // иконка
                 if (menu != null && _langImage != null)
                 {
                     var list = menu.OLHCOGFBIGC;
@@ -161,7 +161,7 @@ namespace MultiLanguage
             }
             Close();
 
-            // меню читает тексты при загрузке сцены, поэтому перезагружаем её
+            // перезагрузка
             if (ok)
             {
                 try { SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); }
@@ -183,7 +183,6 @@ namespace MultiLanguage
             float W = canvasRt.rect.width;
             float H = canvasRt.rect.height;
 
-            // тёмный фон, клик мимо флагов закрывает панель
             var panelRt = Make("MultiLanguagePanel", canvasRt);
             panelRt.anchorMin = Vector2.zero;
             panelRt.anchorMax = Vector2.one;
@@ -203,7 +202,6 @@ namespace MultiLanguage
             int n = langs.Count;
             int current = PlayerPrefs.GetInt("Language");
 
-            // число колонок подбираем так, чтобы флаги были покрупнее
             float availW = W * 0.70f, availH = H * 0.60f;
             int cols = 1;
             float best = 0f;
@@ -230,7 +228,7 @@ namespace MultiLanguage
 
                 bool isCurrent = def.Id == current;
 
-                // ячейка, ловит клики
+                // ячейка
                 var cellRt = Make("Lang_" + def.Code, panelRt);
                 Center(cellRt, new Vector2(cellW, cellH), new Vector2(x, y));
                 var cellImg = cellRt.gameObject.AddComponent<Image>();
@@ -305,7 +303,6 @@ namespace MultiLanguage
         {
             if (_gameFont == null)
             {
-                // GetComponentInChildren<Text>(true) тут падает (VerificationException), ищем руками
                 var any = FindFirstText(_langButton.transform.parent);
                 if (any != null) _gameFont = any.font;
             }
@@ -321,7 +318,6 @@ namespace MultiLanguage
             return LoadFont(def.Code, def.Native) ?? _gameFont;
         }
 
-        // первый Text рекурсивно, включая неактивные
         private static Text FindFirstText(Transform t)
         {
             if (t == null) return null;
@@ -338,8 +334,6 @@ namespace MultiLanguage
             return null;
         }
 
-        // свой шрифт из файла или по имени ОС тут не создать (методы вырезаны),
-        // поэтому берём из уже загруженных
         private static Font LoadFont(string code, string sample)
         {
             string key = code + "|" + sample;
