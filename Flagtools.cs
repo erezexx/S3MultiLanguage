@@ -10,7 +10,7 @@ namespace MultiLanguage
 {
     internal static class FlagTools
     {
-        public const int Size = 256;   // размер готового флага, px
+        public const int Size = 256;   //px
 
         public static byte[] ReadResource(string name)
         {
@@ -75,7 +75,7 @@ namespace MultiLanguage
             finally { UnityEngine.Object.Destroy(t); }
         }
 
-        // берём квадрат из центра, масштабируем, режем кругом и затемняем к краю
+        // круг
         private static Sprite MakeRound(Texture2D src)
         {
             int w = src.width, h = src.height;
@@ -94,7 +94,7 @@ namespace MultiLanguage
                     float dy = y + 0.5f - r;
                     float d = Mathf.Sqrt(dx * dx + dy * dy);
 
-                    float edge = Mathf.Clamp01(r - d);      // сглаживание края, 1px
+                    float edge = Mathf.Clamp01(r - d);      // 1px
                     if (edge <= 0f)
                     {
                         px[y * Size + x] = new Color32(0, 0, 0, 0);
@@ -105,7 +105,6 @@ namespace MultiLanguage
                     float v = (oy + (y + 0.5f) / Size * side) / h;
                     Color c = src.GetPixelBilinear(u, v);
 
-                    // к краю темнее, как у флагов в игре
                     float t = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.70f, 1f, d / r));
                     float k = 1f - 0.55f * t;
 
